@@ -1,0 +1,7 @@
+dev: true
+debug: true
+database:
+  url: mongodb://root:example@mongo:27017/dating
+server:
+  port: 8000
+  timeout: 30
