@@ -1,4 +1,4 @@
-package oauth
+package profile
 
 import (
 	"dating/internal/constant"
@@ -13,19 +13,19 @@ import (
 	"go.uber.org/zap"
 )
 
-type auth struct {
-	logger     logger.Logger
-	AuthModule module.AuthModule
+type profile struct {
+	logger        logger.Logger
+	ProfileModule module.ProfileModule
 }
 
-func InitAuth(logger logger.Logger, AuthModule module.AuthModule) rest.OAuth {
-	return &auth{
+func InitProfile(logger logger.Logger, profileModule module.ProfileModule) rest.Profile {
+	return &profile{
 		logger,
-		AuthModule,
+		profileModule,
 	}
 }
 
-func (o *auth) Test(ctx *gin.Context) {
+func (o *profile) Register(ctx *gin.Context) {
 	userParam := model.User{}
 	err := ctx.ShouldBind(&userParam)
 	if err != nil {

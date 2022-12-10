@@ -1,17 +1,15 @@
-package dto
+package model
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/dongri/phonenumber"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-type User struct {
+type Profile struct {
 	// ID is the unique identifier of the user.
 	// It is automatically generated when the user is created.
 	ID uuid.UUID `json:"id,omitempty"`
@@ -46,7 +44,7 @@ type User struct {
 	OTP string `json:"otp,omitempty"`
 }
 
-func (u User) ValidateUser() error {
+func (u User) ValidateProfile() error {
 	return validation.ValidateStruct(&u,
 		validation.Field(&u.FirstName, validation.Required.Error("first name is required")),
 		validation.Field(&u.MiddleName, validation.Required.Error("middle name is required")),
@@ -56,39 +54,4 @@ func (u User) ValidateUser() error {
 		validation.Field(&u.Password, validation.When(u.Email != "", validation.Required.Error("password is required"), validation.Length(6, 32).Error("password must be between 6 and 32 characters"))),
 		validation.Field(&u.OTP, validation.Required.Error("otp is required"), validation.Length(6, 6).Error("otp must be 6 characters")),
 	)
-}
-
-type LoginCredential struct {
-	// Phone number of the user if for login with otp
-	Phone string `json:"phone,omitempty"`
-	// OTP generated from phone number
-	OTP string `json:"otp,omitempty"`
-	// Email of the user if for login with password
-	Email string `json:"email,omitempty"`
-	// Password of the user if for login with password
-	Password string `json:"password,omitempty"`
-}
-
-func (u LoginCredential) ValidateLoginCredential() error {
-	return validation.ValidateStruct(&u,
-		validation.Field(&u.Phone, validation.When(u.OTP != "" && u.Email == "",
-			validation.Required.Error("phone is required"),
-			validation.By(validatePhone))),
-		validation.Field(&u.OTP, validation.When(u.Phone != "",
-			validation.Required.Error("otp is required"),
-			validation.Length(6, 6).Error("otp must be 6 characters"))),
-		validation.Field(&u.Email, validation.When(u.Phone == "" && u.Password != "",
-			validation.Required.Error("email is required"),
-			is.EmailFormat.Error("email is not valid"))),
-		validation.Field(&u.Password, validation.When(u.Email != "",
-			validation.Required.Error("password is required"),
-			validation.Length(6, 32).Error("password must be between 6 and 32 characters"))),
-	)
-}
-func validatePhone(phone interface{}) error {
-	str := phonenumber.Parse(fmt.Sprintf("%v", phone), "ET")
-	if str == "" {
-		return fmt.Errorf("invalid phone number")
-	}
-	return nil
 }
