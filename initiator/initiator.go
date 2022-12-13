@@ -51,7 +51,8 @@ func Initiate() {
 	log.Info(context.Background(), "migration initialized")
 
 	log.Info(context.Background(), "initializing persistence layer")
-	persistence := InitPersistence(client, log)
+	CreateIndexes(log, client.Database(viper.GetString("database.name")))
+	persistence := InitPersistence(client.Database(viper.GetString("database.name")), log)
 	log.Info(context.Background(), "persistence layer initialized")
 
 	log.Info(context.Background(), "initializing platform layer")

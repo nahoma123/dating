@@ -6,4 +6,4 @@ run:
 
 # note: docker will create the database file
 prepare-db:
-	- sudo docker compose up -d
+	- sudo docker compose up 

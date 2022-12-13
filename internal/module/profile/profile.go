@@ -4,16 +4,19 @@ import (
 	"context"
 	"dating/internal/constant/model"
 	"dating/internal/module"
+	"dating/internal/storage"
 	"dating/platform/logger"
 )
 
 type profile struct {
-	logger logger.Logger
+	profileStorage storage.ProfileStorage
+	logger         logger.Logger
 }
 
-func InitProfile(logger logger.Logger) module.ProfileModule {
+func InitProfile(logger logger.Logger, profileStorage storage.ProfileStorage) module.ProfileModule {
 	return &profile{
-		logger,
+		logger:         logger,
+		profileStorage: profileStorage,
 	}
 }
 
@@ -22,7 +25,13 @@ func (o *profile) GetUserProfile(ctx context.Context, Id string) (*model.Profile
 	// logic from other microservice
 	return nil, nil
 }
-func (o *profile) RegisterUserProfile(ctx context.Context, profile *model.Profile) error {
+func (o *profile) RegisterUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error) {
 	//
-	return nil
+
+	profile, err := o.profileStorage.Create(ctx, profile)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return nil, err
+	}
+	return profile, nil
 }

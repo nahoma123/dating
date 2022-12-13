@@ -26,14 +26,20 @@ func InitProfile(logger logger.Logger, profileModule module.ProfileModule) rest.
 }
 
 func (o *profile) Register(ctx *gin.Context) {
-	userParam := model.User{}
-	err := ctx.ShouldBind(&userParam)
+	profile := &model.Profile{}
+	err := ctx.ShouldBind(&profile)
 	if err != nil {
 		o.logger.Info(ctx, zap.Error(err).String)
 		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
 		return
 	}
 
-	o.logger.Info(ctx, "testing log dating")
-	constant.SuccessResponse(ctx, http.StatusCreated, nil, nil)
+	profile, err = o.ProfileModule.RegisterUserProfile(ctx, profile)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, profile, nil)
 }

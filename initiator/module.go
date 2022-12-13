@@ -26,7 +26,7 @@ func InitModule(persistence Persistence, privateKeyPath string, platformLayer Pl
 	// }
 
 	return Module{
-		ProfileModule: profileModule.InitProfile(log),
+		ProfileModule: profileModule.InitProfile(log, persistence.Profile),
 		AuthModule:    oauth.InitOAuth(log),
 	}
 }
