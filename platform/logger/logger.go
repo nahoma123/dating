@@ -2,8 +2,10 @@ package logger
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4"
+	"log"
 	"time"
+
+	"github.com/jackc/pgx/v4"
 
 	"go.uber.org/zap"
 )
@@ -30,6 +32,14 @@ type Logger interface {
 	Log(ctx context.Context, level pgx.LogLevel, msg string, data map[string]interface{})
 
 	extract(ctx context.Context) []zap.Field
+}
+
+func Log() Logger {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatalf("failed to initialize logger: %v", err)
+	}
+	return New(logger)
 }
 
 type logger struct {

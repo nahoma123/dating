@@ -13,7 +13,7 @@ import (
 type Profile struct {
 	// ID is the unique identifier of the user.
 	// It is automatically generated when the user is created.
-	ID        bson.ObjectId `bson:"_id" json:"_id,omitempty"`
+	ID        bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
 	ProfileID uuid.UUID     `bson:"profile_id" json:"profile_id,omitempty"`
 	// Status is the status of the user.
 	// It is set to active by default after successful registration.
@@ -25,6 +25,7 @@ type Profile struct {
 	// CreatedAt is the time when the user is created.
 	// It is automatically set when the user is created.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func (u User) ValidateProfile() error {

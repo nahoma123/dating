@@ -37,6 +37,7 @@ func CreateIndexes(log logger.Logger, db *mongo.Database) {
 }
 
 func InitPersistence(db *mongo.Database, log logger.Logger) Persistence {
+
 	profileStorage := persistence.InitProfileDB(db)
 	return Persistence{
 		Profile: profileStorage,
