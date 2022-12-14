@@ -16,4 +16,5 @@ type AuthModule interface {
 type ProfileModule interface {
 	GetUserProfile(ctx context.Context, Id string) (*model.Profile, error)
 	RegisterUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error)
+	UpdateUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error)
 }

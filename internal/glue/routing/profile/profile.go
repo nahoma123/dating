@@ -16,6 +16,14 @@ func InitRoute(router *gin.RouterGroup, handler rest.Profile, authMiddleware mid
 			Handler:     handler.Register,
 			Middlewares: []gin.HandlerFunc{},
 		},
+
+		// update profile
+		{
+			Method:      "PATCH",
+			Path:        "/profiles",
+			Handler:     handler.UpdateProfile,
+			Middlewares: []gin.HandlerFunc{},
+		},
 	}
 	routing.RegisterRoutes(router, profileRoutes)
 }

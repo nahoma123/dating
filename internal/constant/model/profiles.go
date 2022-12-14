@@ -1,7 +1,9 @@
 package model
 
 import (
+	errorsconstats "dating/internal/constant/errors"
 	"errors"
+	"fmt"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -24,7 +26,7 @@ type Profile struct {
 	AboutMe            string `bson:"about_me" json:"about_me,omitempty"`
 	Age                int    `bson:"age" json:"age,omitempty"`
 	Gender             string `bson:"gender,omitempty" json:"gender,omitempty"`
-	RelationShipStatus string `bson:"relation_ship_status,omitempty" json:"relation_ship_status`
+	RelationShipStatus string `bson:"relation_ship_status,omitempty" json:"relation_ship_status"`
 	Job                string `bson:"job,omitempty" json:"job,omitempty"`
 	CompanyName        string `bson:"company_name,omitempty" json:"company_name,omitempty"`
 	College            string `bson:"college,omitempty" json:"college,omitempty"`
@@ -41,7 +43,7 @@ type Profile struct {
 	Height      int    `bson:"height,omitempty" json:"height,omitempty"`
 	Excercise   bool   `bson:"excercise,omitempty" json:"excercise,omitempty"`
 	DrinkAlchol bool   `bson:"drink_alchol,omitempty" json:"drink_alchol,omitempty"`
-	Children    int    `bson:"children,omitempty" json:"children,omitempty"`
+	Children    int    `bson:"children,omitempty" json:"children"`
 	Religion    string `bson:"religion,omitempty" json:"religion,omitempty"`
 	ZodiacSign  string `bson:"zodiac_sign,omitempty" json:"zodiac_sign"`
 	Smoker      bool   `bson:"smoker,omitempty" json:"smoker,omitempty"`
@@ -51,20 +53,53 @@ type Profile struct {
 	ProfilePicture []string `bson:"profile_picture,omitempty" json:"profile_pictures,omitempty"`
 	// CreatedAt is the time when the user is created.
 	// It is automatically set when the user is created.
+
+	Location *Location `bson:"location,omitempty" json:"location,omitempty"`
+
 	CreatedAt time.Time `bson:"created_at,omitempty" json:"created_at,omitempty"`
 	UpdatedAt time.Time `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }
 
-func (u Profile) ValidateProfile() error {
+func (u Profile) ValidateRegisterProfile() error {
 	if u.User == nil {
 		return validation.Errors{
 			"user": errors.New("is required"),
 		}
 	}
-	return validation.ValidateStruct(&u, validation.Field(&u.User)) // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
-	// validation.Field(&u.User.MiddleName, validation.Required.Error("middle name is required")),
-	// validation.Field(&u.User.LastName, validation.Required.Error("last name is required")),
-	// validation.Field(&u.User.Email, is.EmailFormat.Error("email is not valid")),
+	return validation.ValidateStruct(&u, validation.Field(&u.User), // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
+		validation.Field(&u.AboutMe, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "about_me"))),
+		validation.Field(&u.Age, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "age"))),
+		// validation.Field(&u.Children, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "children"))),
+		validation.Field(&u.College, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "college"))),
+		validation.Field(&u.CompanyName, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "company_name"))),
+		validation.Field(&u.Country, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "country"))),
+		validation.Field(&u.DrinkAlchol, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "drink_alchol"))),
+		validation.Field(&u.Ethnicity, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "ethnicity"))),
+		validation.Field(&u.Excercise, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "excercise"))),
+
+		validation.Field(&u.Job, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "job"))),
+		validation.Field(&u.Gender, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "gender"))),
+		validation.Field(&u.Height, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "height"))),
+		validation.Field(&u.LanguageSpoken, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "lauguage_spoken"))),
+		validation.Field(&u.LookingFor, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "looking_for"))),
+		validation.Field(&u.RelationShipStatus, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "relation_ship_status"))),
+		validation.Field(&u.RelationShipStatus, validation.In("Single", "InRelationShip")),
+		validation.Field(&u.Religion, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "religion"))),
+		// validation.Field(&u.Smoker, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "smoker"))),
+		validation.Field(&u.State, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "state"))),
+		validation.Field(&u.Title, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "title"))),
+		validation.Field(&u.ZodiacSign, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "zodiac_sign"))),
+	)
 	// validation.Field(&u.User.Phone, validation.Required.Error("phone is required"), validation.By(validatePhone)),
 	// validation.Field(&u.User.Password, validation.When(u.User.Email != "", validation.Required.Error("password is required"), validation.Length(6, 32).Error("password must be between 6 and 32 characters"))),
+}
+
+func (u Profile) ValidateUpdateProfile() error {
+	if u.User == nil {
+		return validation.Errors{
+			"user": errors.New("is required"),
+		}
+	}
+	return validation.ValidateStruct(&u, validation.Field(&u.User), // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
+		validation.Field(&u.User.MiddleName, validation.Required.Error("middle name is required")))
 }
