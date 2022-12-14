@@ -82,7 +82,7 @@ func Initiate() {
 	log.Info(context.Background(), "metrics route initialized")
 
 	log.Info(context.Background(), "initializing router")
-	v1 := server.Group("/v1")
+	v1 := server.Group("")
 	InitRouter(server, v1, handler, module, log, viper.GetString("public_key"))
 	log.Info(context.Background(), "router initialized")
 

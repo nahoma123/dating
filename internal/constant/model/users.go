@@ -29,12 +29,12 @@ type User struct {
 	Password string `bson:"password" json:"password,omitempty"`
 	// UserName is the username of the user.
 	// It is currently of no use
-	UserName string `bson:"first_name" json:"user_name,omitempty"`
+	UserName string `bson:"user_name" json:"user_name,omitempty"`
 	// Gender is the gender of the user.
 	Gender string `bson:"gender" json:"gender,omitempty"`
 }
 
-func (u User) ValidateUser() error {
+func (u User) Validate() error {
 	return validation.ValidateStruct(&u,
 		validation.Field(&u.FirstName, validation.Required.Error("first name is required")),
 		validation.Field(&u.MiddleName, validation.Required.Error("middle name is required")),

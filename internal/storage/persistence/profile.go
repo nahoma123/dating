@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"dating/internal/constant"
 	"dating/internal/constant/errors"
 	"dating/internal/constant/model"
 	"dating/internal/storage"
@@ -27,8 +28,12 @@ func (p *profile) Create(ctx context.Context, profile *model.Profile) (*model.Pr
 
 	// createIndex( { "hostname": 1 }, { unique: true } )
 	id, _ := uuid.NewV4()
-	profile.ProfileID = id
+	profile.ProfileID = id.String()
+
 	profile.CreatedAt = time.Now()
+	profile.UpdatedAt = time.Now()
+
+	profile.Status = constant.Active
 	_, err := p.db.Collection(string(storage.Profile)).InsertOne(ctx, profile)
 	if err != nil {
 		logger.Log().Error(ctx, err.Error())
