@@ -20,8 +20,15 @@ func InitRoute(router *gin.RouterGroup, handler rest.Profile, authMiddleware mid
 		// update profile
 		{
 			Method:      "PATCH",
-			Path:        "/profiles",
+			Path:        "/profiles/:id",
 			Handler:     handler.UpdateProfile,
+			Middlewares: []gin.HandlerFunc{},
+		},
+		// get profile
+		{
+			Method:      "GET",
+			Path:        "/profiles/:id",
+			Handler:     handler.GetProfile,
 			Middlewares: []gin.HandlerFunc{},
 		},
 	}

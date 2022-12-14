@@ -47,13 +47,26 @@ func (o *profile) Register(ctx *gin.Context) {
 func (o *profile) UpdateProfile(ctx *gin.Context) {
 	profile := &model.Profile{}
 	err := ctx.ShouldBind(&profile)
-	if err != nil {
+	id := ctx.Param("id")
+	if err != nil || id == "" {
 		o.logger.Info(ctx, zap.Error(err).String)
 		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
 		return
 	}
-
+	profile.ProfileID = id
 	profile, err = o.ProfileModule.UpdateUserProfile(ctx, profile)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, profile, nil)
+}
+
+func (o *profile) GetProfile(ctx *gin.Context) {
+	id := ctx.Param("id")
+	profile, err := o.ProfileModule.GetUserProfile(ctx, id)
 	if err != nil {
 		o.logger.Info(ctx, zap.Error(err).String)
 		_ = ctx.Error(err)

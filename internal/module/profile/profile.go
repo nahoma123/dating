@@ -23,11 +23,6 @@ func InitProfile(logger logger.Logger, profileStorage storage.ProfileStorage) mo
 	}
 }
 
-func (o *profile) GetUserProfile(ctx context.Context, Id string) (*model.Profile, error) {
-
-	// logic from other microservice
-	return nil, nil
-}
 func (o *profile) RegisterUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error) {
 	//
 	if err := profile.ValidateRegisterProfile(); err != nil {
@@ -52,6 +47,15 @@ func (o *profile) UpdateUserProfile(ctx context.Context, profile *model.Profile)
 	}
 
 	profile, err := o.profileStorage.Update(ctx, profile)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return nil, err
+	}
+	return profile, nil
+}
+
+func (o *profile) GetUserProfile(ctx context.Context, id string) (*model.Profile, error) {
+	profile, err := o.profileStorage.Get(ctx, id)
 	if err != nil {
 		o.logger.Warn(ctx, err.Error())
 		return nil, err

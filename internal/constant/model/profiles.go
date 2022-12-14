@@ -95,11 +95,5 @@ func (u Profile) ValidateRegisterProfile() error {
 }
 
 func (u Profile) ValidateUpdateProfile() error {
-	if u.User == nil {
-		return validation.Errors{
-			"user": errors.New("is required"),
-		}
-	}
-	return validation.ValidateStruct(&u, validation.Field(&u.User), // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
-		validation.Field(&u.User.MiddleName, validation.Required.Error("middle name is required")))
+	return validation.ValidateStruct(&u, validation.Field(&u.RelationShipStatus, validation.In("Single", "InRelationShip"))) // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
 }

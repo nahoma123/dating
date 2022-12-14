@@ -9,4 +9,5 @@ type OAuth interface {
 type Profile interface {
 	Register(ctx *gin.Context)
 	UpdateProfile(ctx *gin.Context)
+	GetProfile(ctx *gin.Context)
 }
