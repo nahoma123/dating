@@ -52,12 +52,18 @@ func (p *profile) Update(ctx context.Context, profile *model.Profile) (*model.Pr
 	// createIndex( { "hostname": 1 }, { unique: true } )
 
 	profile.UpdatedAt = time.Now()
-	updateProfile, err := bson.Marshal(profile)
+	pByte, err := bson.Marshal(profile)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = p.db.Collection(string(storage.Profile)).UpdateOne(ctx, bson.M{"profile_id": profile.ProfileID}, bson.M{"$set": updateProfile})
+	var update bson.M
+	err = bson.Unmarshal(pByte, &update)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.db.Collection(string(storage.Profile)).UpdateOne(ctx, bson.M{"profile_id": profile.ProfileID}, bson.M{"$set": update})
 	if err != nil {
 		return nil, err
 	}

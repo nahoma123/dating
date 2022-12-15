@@ -10,6 +10,7 @@ import (
 	"github.com/swaggo/swag/example/basic/docs"
 
 	"dating/internal/glue/routing/auth"
+	"dating/internal/glue/routing/mesc"
 	"dating/internal/glue/routing/profile"
 	"dating/internal/handler/middleware"
 	"dating/platform/logger"
@@ -28,4 +29,5 @@ func InitRouter(router *gin.Engine, group *gin.RouterGroup, handler Handler, mod
 
 	profile.InitRoute(group, handler.profile, authMiddleware)
 
+	mesc.InitRoute(group, handler.mesc, authMiddleware)
 }

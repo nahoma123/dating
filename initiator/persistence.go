@@ -15,6 +15,7 @@ import (
 type Persistence struct {
 	// TODO implement
 	Profile storage.ProfileStorage
+	Mesc    storage.MescStorage
 }
 
 func CreateIndexes(log logger.Logger, db *mongo.Database) {
@@ -39,7 +40,9 @@ func CreateIndexes(log logger.Logger, db *mongo.Database) {
 func InitPersistence(db *mongo.Database, log logger.Logger) Persistence {
 
 	profileStorage := persistence.InitProfileDB(db)
+	mescStorage := persistence.InitMescDB(db)
 	return Persistence{
 		Profile: profileStorage,
+		Mesc:    mescStorage,
 	}
 }

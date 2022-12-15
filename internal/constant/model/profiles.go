@@ -6,27 +6,25 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type Profile struct {
 	// ID is the unique identifier of the user.
 	// It is automatically generated when the user is created.
-	ID        bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
-	ProfileID string        `bson:"profile_id" json:"profile_id,omitempty"`
+	ID        *int   `bson:"_id,omitempty" json:"_id,omitempty"`
+	ProfileID string `bson:"profile_id,omitempty" json:"profile_id,omitempty"`
 	// Status is the status of the user.
-	// It is set to active by default after successful registration.
+	// It is set to active by default after succesObjectIDs must be exactly 12 bytes long (got 0)sful registration.
 	User   *User  `bson:"user" json:"user,omitempty"`
 	Status string `json:"status,omitempty"`
 
 	// about me info
 	Title              string `bson:"title,omitempty" json:"title,omitempty"`
-	AboutMe            string `bson:"about_me" json:"about_me,omitempty"`
-	Age                int    `bson:"age" json:"age,omitempty"`
+	AboutMe            string `bson:"about_me,omitempty" json:"about_me,omitempty"`
+	Age                int    `bson:"age,omitempty" json:"age,omitempty"`
 	Gender             string `bson:"gender,omitempty" json:"gender,omitempty"`
-	RelationShipStatus string `bson:"relation_ship_status,omitempty" json:"relation_ship_status"`
+	RelationShipStatus string `bson:"relation_ship_status,omitempty" json:"relation_ship_status,omitempty"`
 	Job                string `bson:"job,omitempty" json:"job,omitempty"`
 	CompanyName        string `bson:"company_name,omitempty" json:"company_name,omitempty"`
 	College            string `bson:"college,omitempty" json:"college,omitempty"`

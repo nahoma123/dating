@@ -2,6 +2,7 @@ package initiator
 
 import (
 	"dating/internal/module"
+	"dating/internal/module/mesc"
 	"dating/internal/module/oauth"
 	profileModule "dating/internal/module/profile"
 	"dating/platform/logger"
@@ -11,6 +12,7 @@ type Module struct {
 	// TODO implement
 	AuthModule    module.AuthModule
 	ProfileModule module.ProfileModule
+	MescModule    module.MescModule
 }
 
 // if the dating app has its own private key for reading tokens
@@ -28,5 +30,6 @@ func InitModule(persistence Persistence, privateKeyPath string, platformLayer Pl
 	return Module{
 		ProfileModule: profileModule.InitProfile(log, persistence.Profile),
 		AuthModule:    oauth.InitOAuth(log),
+		MescModule:    mesc.InitMesc(log, persistence.Mesc),
 	}
 }

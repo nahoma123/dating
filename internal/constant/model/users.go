@@ -7,31 +7,29 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/gofrs/uuid"
-
-	"gopkg.in/mgo.v2/bson"
 )
 
 type User struct {
-	ID bson.ObjectId `bson:"_id" json:"id"`
+	ID *int `bson:"_id,omitempty" json:"id"`
 	// FirstName is the first name of the user.
-	UserID    uuid.UUID `bson:"user_id" json:"user_id"`
-	FirstName string    `bson:"first_name"  json:"first_name,omitempty"`
+	UserID    uuid.UUID `bson:"user_id,omitempty" json:"user_id"`
+	FirstName string    `bson:"first_name,omitempty"  json:"first_name,omitempty"`
 	// MiddleName is the middle name of the user.
-	MiddleName string `bson:"middle_name" json:"middle_name,omitempty"`
+	MiddleName string `bson:"middle_name,omitempty" json:"middle_name,omitempty"`
 	// LastName is the last name of the user.
-	LastName string `bson:"last_name" json:"last_name,omitempty"`
+	LastName string `bson:"last_name,omitempty" json:"last_name,omitempty"`
 	// Email is the email of the user.
-	Email string `bson:"email" json:"email,omitempty"`
+	Email string `bson:"email,omitempty" json:"email,omitempty"`
 	// Phone is the phone of the user.
-	Phone string `bson:"phone" json:"phone,omitempty"`
+	Phone string `bson:"phone,omitempty" json:"phone,omitempty"`
 	// Password is the password of the user.
 	// It is only used for logging in with email
-	Password string `bson:"password" json:"password,omitempty"`
+	Password string `bson:"password,omitempty" json:"password,omitempty"`
 	// UserName is the username of the user.
 	// It is currently of no use
-	UserName string `bson:"user_name" json:"user_name,omitempty"`
+	UserName string `bson:"user_name,omitempty" json:"user_name,omitempty"`
 	// Gender is the gender of the user.
-	Gender string `bson:"gender" json:"gender,omitempty"`
+	Gender string `bson:"gender,omitempty" json:"gender,omitempty"`
 }
 
 func (u User) Validate() error {
