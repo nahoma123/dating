@@ -3,6 +3,7 @@ package module
 import (
 	"context"
 	"crypto/rsa"
+	"dating/internal/constant"
 	"dating/internal/constant/model"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -26,7 +27,7 @@ type MescModule interface {
 
 	CreateState(ctx context.Context, profile *model.State) (*model.State, error)
 	DeleteState(ctx context.Context, id string) error
-	GetStates(ctx context.Context, page int, perPage int) (*model.Country, error)
+	GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error)
 
 	CreateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error)
 	UpdateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error)

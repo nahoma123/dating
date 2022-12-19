@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SuccessResponse(ctx *gin.Context, statusCode int, data interface{}, metaData *model.MetaData) {
+func SuccessResponse(ctx *gin.Context, statusCode int, data interface{}, metaData interface{}) {
 	ctx.JSON(
 		statusCode,
 		model.Response{

@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"dating/internal/constant"
 	"dating/internal/constant/errors"
 	"dating/internal/constant/model"
 	"dating/internal/storage"
@@ -162,6 +163,26 @@ func (*mesc) GetEthnicities(ctx context.Context, page int, perPage int) (*model.
 }
 
 // GetStates implements storage.MescStorage
-func (*mesc) GetStates(ctx context.Context, page int, perPage int) (*model.State, error) {
-	panic("unimplemented")
+func (mesc *mesc) GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error) {
+	var results []bson.M
+
+	err := constant.GetResults(ctx, mesc.db, string(storage.State), filterPagination, &results)
+	if err != nil {
+		return nil, err
+	}
+
+	var states []model.State
+	for _, result := range results {
+		var state model.State
+		b, err := bson.Marshal(result)
+		if err != nil {
+			return nil, err
+		}
+		err = bson.Unmarshal(b, &state)
+		if err != nil {
+			return nil, err
+		}
+		states = append(states, state)
+	}
+	return states, nil
 }

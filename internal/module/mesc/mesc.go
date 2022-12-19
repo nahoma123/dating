@@ -2,6 +2,7 @@ package mesc
 
 import (
 	"context"
+	"dating/internal/constant"
 	"dating/internal/constant/model"
 	"dating/internal/module"
 	"dating/internal/storage"
@@ -66,8 +67,12 @@ func (*mesc) GetEthnicities(ctx context.Context, page int, perPage int) (*model.
 }
 
 // GetStates implements module.MescModule
-func (*mesc) GetStates(ctx context.Context, page int, perPage int) (*model.Country, error) {
-	panic("unimplemented")
+func (msc *mesc) GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error) {
+	states, err := msc.mescStorage.GetStates(ctx, filterPagination)
+	if err != nil {
+		return nil, err
+	}
+	return states, nil
 }
 
 // DeleteCountry implements module.MescModule

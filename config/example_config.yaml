@@ -1,4 +1,8 @@
-debug: false
 dev: true
+debug: true
 database:
-  url: mongodb://root:example@mongo:27017/
+  url: mongodb://root:example@localhost:27017/admin?replicaSet=&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1
+  name: dating
+server:
+  port: 8000
+  timeout: 30

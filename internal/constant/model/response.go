@@ -4,7 +4,7 @@ type Response struct {
 	// OK is only true if the request was successful.
 	OK bool `json:"ok"`
 	// MetaData contains additional data like filtering, pagination, etc.
-	MetaData *MetaData `json:"meta_data,omitempty"`
+	MetaData interface{} `json:"meta_data,omitempty"`
 	// Data contains the actual data of the response.
 	Data interface{} `json:"data,omitempty"`
 	// Error contains the error detail if the request was not successful.

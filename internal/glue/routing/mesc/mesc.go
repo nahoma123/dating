@@ -30,7 +30,7 @@ func InitRoute(router *gin.RouterGroup, handler rest.Mesc, authMiddleware middle
 		},
 		{
 			Method:      "GET",
-			Path:        "/states",
+			Path:        "/countries/:country_id/states",
 			Handler:     handler.GetStates,
 			Middlewares: []gin.HandlerFunc{},
 		},

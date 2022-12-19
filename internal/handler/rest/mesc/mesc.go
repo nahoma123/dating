@@ -138,6 +138,19 @@ func (*mesc) GetEthnicities(ctx *gin.Context) {
 }
 
 // GetStates implements rest.Mesc
-func (*mesc) GetStates(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) GetStates(ctx *gin.Context) {
+
+	countryId := ctx.Param("country_id")
+	ftr := constant.ParseFilterPagination(ctx)
+	ftr = constant.AddFilter(*ftr, "country_id", countryId, "=")
+
+	states, err := msc.mescModule.GetStates(ctx, ftr)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, states, ftr)
+
 }

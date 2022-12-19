@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"dating/internal/constant"
 	"dating/internal/constant/model"
 )
 
@@ -28,7 +29,7 @@ type MescStorage interface {
 
 	CreateState(ctx context.Context, profile *model.State) (*model.State, error)
 	DeleteState(ctx context.Context, id int) error
-	GetStates(ctx context.Context, page int, perPage int) (*model.State, error)
+	GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error)
 
 	CreateEthnicity(ctx context.Context, profile *model.Ethnicity) (*model.Ethnicity, error)
 	DeleteEthnicity(ctx context.Context, id int) error
