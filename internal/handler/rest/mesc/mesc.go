@@ -48,8 +48,25 @@ func (msc *mesc) CreateCountry(ctx *gin.Context) {
 }
 
 // CreateEthnicity implements rest.Mesc
-func (*mesc) CreateEthnicity(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) CreateEthnicity(ctx *gin.Context) {
+	ethnicity := &model.Ethnicity{}
+	err := ctx.ShouldBind(&ethnicity)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
+		return
+	}
+
+	id := ctx.Param("country_id")
+	ethnicity.CountryId = id
+	ethnicity, err = msc.mescModule.CreateEthnicity(ctx, ethnicity)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, ethnicity, nil)
 }
 
 // CreateState implements rest.Mesc
@@ -88,13 +105,29 @@ func (msc *mesc) DeleteCountry(ctx *gin.Context) {
 }
 
 // DeleteEthnicity implements rest.Mesc
-func (*mesc) DeleteEthnicity(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) DeleteEthnicity(ctx *gin.Context) {
+	id := ctx.Param("ethnicity_id")
+	err := msc.mescModule.DeleteEthnicity(ctx, id)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, "deleted successfully", nil)
 }
 
 // DeleteState implements rest.Mesc
-func (*mesc) DeleteState(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) DeleteState(ctx *gin.Context) {
+	id := ctx.Param("state_id")
+	err := msc.mescModule.DeleteState(ctx, id)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, "deleted successfully", nil)
 }
 
 // GetCountries implements rest.Mesc
@@ -133,8 +166,19 @@ func (msc *mesc) GetCountries(ctx *gin.Context) {
 }
 
 // GetEthnicities implements rest.Mesc
-func (*mesc) GetEthnicities(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) GetEthnicities(ctx *gin.Context) {
+	countryId := ctx.Param("country_id")
+	ftr := constant.ParseFilterPagination(ctx)
+	ftr = constant.AddFilter(*ftr, "country_id", countryId, "=")
+
+	states, err := msc.mescModule.GetEthnicities(ctx, ftr)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, states, ftr)
 }
 
 // GetStates implements rest.Mesc

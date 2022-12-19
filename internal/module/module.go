@@ -29,7 +29,7 @@ type MescModule interface {
 	DeleteState(ctx context.Context, id string) error
 	GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error)
 
-	CreateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error)
-	UpdateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error)
-	GetEthnicities(ctx context.Context, page int, perPage int) (*model.Country, error)
+	CreateEthnicity(ctx context.Context, profile *model.Ethnicity) (*model.Ethnicity, error)
+	DeleteEthnicity(ctx context.Context, id string) error
+	GetEthnicities(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Ethnicity, error)
 }

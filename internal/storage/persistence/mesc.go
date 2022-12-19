@@ -109,8 +109,33 @@ func (mesc *mesc) GetCountries(ctx context.Context, page int, perPage int) ([]*m
 }
 
 // CreateEthnicity implements storage.MescStorage
-func (*mesc) CreateEthnicity(ctx context.Context, profile *model.Ethnicity) (*model.Ethnicity, error) {
-	panic("unimplemented")
+func (mesc *mesc) CreateEthnicity(ctx context.Context, ethnicity *model.Ethnicity) (*model.Ethnicity, error) {
+	countryFilter := bson.M{"country_id": ethnicity.CountryId}
+	var foundCountry model.Country
+	err := mesc.db.Collection(string(storage.Country)).FindOne(ctx, countryFilter).Decode(&foundCountry)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.ErrNoRecordFound.Wrap(err, errors.UnableToFindCountryByTheIdProvided)
+		}
+		logger.Log().Error(ctx, err.Error())
+		return nil, errors.ErrInternalServerError.New(errors.UnknownDbError)
+	}
+
+	id, _ := uuid.NewV4()
+	ethnicity.EthnicityId = id.String()
+
+	ethnicity.CreatedAt = time.Now()
+	ethnicity.UpdatedAt = time.Now()
+
+	_, err = mesc.db.Collection(string(storage.Ethnicity)).InsertOne(ctx, ethnicity)
+	if err != nil {
+		logger.Log().Error(ctx, err.Error())
+		if mongo.IsDuplicateKeyError(err) {
+			return nil, errors.ErrDataExists.Wrap(err, errors.CountryIsAlreadyRegistered)
+		}
+	}
+
+	return ethnicity, err
 }
 
 // CreateState implements storage.MescStorage
@@ -148,18 +173,64 @@ func (mesc *mesc) CreateState(ctx context.Context, state *model.State) (*model.S
 }
 
 // DeleteEthnicity implements storage.MescStorage
-func (*mesc) DeleteEthnicity(ctx context.Context, id int) error {
-	panic("unimplemented")
+func (msc *mesc) DeleteEthnicity(ctx context.Context, id string) error {
+	result, err := msc.db.Collection(string(storage.Ethnicity)).DeleteOne(
+		ctx,
+		bson.M{"ethnicity_id": id},
+	)
+	if err != nil {
+		logger.Log().Error(ctx, err.Error())
+		return errors.ErrInternalServerError.Wrap(err, errors.UnknownDbError)
+	}
+
+	if result.DeletedCount == 0 {
+		return errors.ErrNoRecordFound.New(errors.RecordNotfound)
+	}
+
+	return nil
 }
 
 // DeleteState implements storage.MescStorage
-func (*mesc) DeleteState(ctx context.Context, id int) error {
-	panic("unimplemented")
+func (msc *mesc) DeleteState(ctx context.Context, id string) error {
+	result, err := msc.db.Collection(string(storage.State)).DeleteOne(
+		ctx,
+		bson.M{"state_id": id},
+	)
+	if err != nil {
+		logger.Log().Error(ctx, err.Error())
+		return errors.ErrInternalServerError.Wrap(err, errors.UnknownDbError)
+	}
+
+	if result.DeletedCount == 0 {
+		return errors.ErrNoRecordFound.New(errors.RecordNotfound)
+	}
+
+	return nil
 }
 
 // GetEthnicities implements storage.MescStorage
-func (*mesc) GetEthnicities(ctx context.Context, page int, perPage int) (*model.Ethnicity, error) {
-	panic("unimplemented")
+func (mesc *mesc) GetEthnicities(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Ethnicity, error) {
+	var results []bson.M
+
+	err := constant.GetResults(ctx, mesc.db, string(storage.Ethnicity), filterPagination, &results)
+	if err != nil {
+		return nil, err
+	}
+
+	var ethnicities []model.Ethnicity
+	for _, result := range results {
+		var ethnicity model.Ethnicity
+		b, err := bson.Marshal(result)
+		if err != nil {
+			return nil, err
+		}
+		err = bson.Unmarshal(b, &ethnicity)
+		if err != nil {
+			return nil, err
+		}
+		ethnicities = append(ethnicities, ethnicity)
+	}
+	return ethnicities, nil
 }
 
 // GetStates implements storage.MescStorage

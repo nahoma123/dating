@@ -38,8 +38,13 @@ func (msc *mesc) CreateCountry(ctx context.Context, country *model.Country) (*mo
 }
 
 // CreateEthnicity implements module.MescModule
-func (*mesc) CreateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error) {
-	panic("unimplemented")
+func (msc *mesc) CreateEthnicity(ctx context.Context, profile *model.Ethnicity) (*model.Ethnicity, error) {
+	ethnicity, err := msc.mescStorage.CreateEthnicity(ctx, profile)
+	if err != nil {
+		msc.logger.Warn(ctx, err.Error())
+		return nil, err
+	}
+	return ethnicity, nil
 }
 
 // CreateState implements module.MescModule
@@ -62,8 +67,12 @@ func (msc *mesc) GetCountries(ctx context.Context, page int, perPage int) ([]*mo
 }
 
 // GetEthnicities implements module.MescModule
-func (*mesc) GetEthnicities(ctx context.Context, page int, perPage int) (*model.Country, error) {
-	panic("unimplemented")
+func (msc *mesc) GetEthnicities(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Ethnicity, error) {
+	ethnicities, err := msc.mescStorage.GetEthnicities(ctx, filterPagination)
+	if err != nil {
+		return nil, err
+	}
+	return ethnicities, nil
 }
 
 // GetStates implements module.MescModule
@@ -81,11 +90,11 @@ func (msc *mesc) DeleteCountry(ctx context.Context, countryId string) error {
 }
 
 // UpdateEthnicity implements module.MescModule
-func (*mesc) UpdateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error) {
-	panic("unimplemented")
+func (msc *mesc) DeleteEthnicity(ctx context.Context, id string) error {
+	return msc.mescStorage.DeleteEthnicity(ctx, id)
 }
 
 // delete State implements module.MescModule
-func (*mesc) DeleteState(ctx context.Context, id string) error {
-	panic("unimplemented")
+func (msc *mesc) DeleteState(ctx context.Context, id string) error {
+	return msc.mescStorage.DeleteState(ctx, id)
 }
