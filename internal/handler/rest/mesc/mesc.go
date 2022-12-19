@@ -8,6 +8,7 @@ import (
 	"dating/internal/module"
 	"dating/platform/logger"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -31,7 +32,7 @@ func (msc *mesc) CreateCountry(ctx *gin.Context) {
 	err := ctx.ShouldBind(&mesc)
 	if err != nil {
 		msc.logger.Info(ctx, zap.Error(err).String)
-		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
 		return
 	}
 
@@ -52,13 +53,38 @@ func (*mesc) CreateEthnicity(ctx *gin.Context) {
 }
 
 // CreateState implements rest.Mesc
-func (*mesc) CreateState(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) CreateState(ctx *gin.Context) {
+	state := &model.State{}
+	err := ctx.ShouldBind(&state)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
+		return
+	}
+
+	id := ctx.Param("country_id")
+	state.CountryId = id
+	state, err = msc.mescModule.CreateState(ctx, state)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, state, nil)
 }
 
 // DeleteCountry implements rest.Mesc
-func (*mesc) DeleteCountry(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) DeleteCountry(ctx *gin.Context) {
+	id := ctx.Param("country_id")
+	err := msc.mescModule.DeleteCountry(ctx, id)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, "deleted successfully", nil)
 }
 
 // DeleteEthnicity implements rest.Mesc
@@ -72,8 +98,38 @@ func (*mesc) DeleteState(ctx *gin.Context) {
 }
 
 // GetCountries implements rest.Mesc
-func (*mesc) GetCountries(ctx *gin.Context) {
-	panic("unimplemented")
+func (msc *mesc) GetCountries(ctx *gin.Context) {
+	page := ctx.Query("page")
+	perPage := ctx.Query("per_page")
+	if page == "" {
+		page = "1"
+	}
+	if perPage == "" {
+		perPage = "10"
+	}
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
+		return
+	}
+
+	perPageInt, err := strconv.Atoi(perPage)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
+		return
+	}
+
+	countries, metaData, err := msc.mescModule.GetCountries(ctx, pageInt, perPageInt)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, countries, metaData)
+
 }
 
 // GetEthnicities implements rest.Mesc

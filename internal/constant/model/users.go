@@ -7,10 +7,11 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/gofrs/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
-	ID *int `bson:"_id,omitempty" json:"id"`
+	Id primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	// FirstName is the first name of the user.
 	UserID    uuid.UUID `bson:"user_id,omitempty" json:"user_id"`
 	FirstName string    `bson:"first_name,omitempty"  json:"first_name,omitempty"`

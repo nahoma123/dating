@@ -13,13 +13,14 @@ type Response struct {
 
 type MetaData struct {
 	// PageNo is the page number of the response data.
-	PageNo int `json:"page_no,omitempty"`
-	// PageSize is the size of the page.
-	PageSize int `json:"page_size,omitempty"`
-	// TotalCount is the total count of data for the response.
-	TotalCount int `json:"total_count,omitempty"`
+	Page int `json:"page,omitempty"`
+	// PerPage is the page of the page.
+	PerPage int `json:"page_page,omitempty"`
+	// TotalPages is the total count of data for the response.
+	TotalPages int `json:"total_pages,omitempty"`
 	// Extra contains other response specific data
-	Extra interface{} `json:"extra,omitempty"`
+	TotalCount int         `json:"total_count,omitempty"`
+	Extra      interface{} `json:"extra,omitempty"`
 	// Sort is the sort order of the response data.
 	Sort string `form:"sort" json:"sort,omitempty"`
 }
@@ -43,4 +44,12 @@ type FieldError struct {
 	Name string `json:"name"`
 	// Description is the error description for this field.
 	Description string `json:"description"`
+}
+
+func PrepareMeta(page, perpage, totalCount int) *MetaData {
+	return &MetaData{
+		Page:       page,
+		PerPage:    perpage,
+		TotalPages: totalCount,
+	}
 }

@@ -23,8 +23,8 @@ type ProfileStorage interface {
 
 type MescStorage interface {
 	CreateCountry(ctx context.Context, profile *model.Country) (*model.Country, error)
-	DeleteCountry(ctx context.Context, id int) error
-	GetCountries(ctx context.Context, page int, perPage int) (*model.Country, error)
+	DeleteCountry(ctx context.Context, id string) error
+	GetCountries(ctx context.Context, page int, perPage int) ([]*model.Country, *model.MetaData, error)
 
 	CreateState(ctx context.Context, profile *model.State) (*model.State, error)
 	DeleteState(ctx context.Context, id int) error

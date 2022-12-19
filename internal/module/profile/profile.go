@@ -26,7 +26,7 @@ func InitProfile(logger logger.Logger, profileStorage storage.ProfileStorage) mo
 func (o *profile) RegisterUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error) {
 	//
 	if err := profile.ValidateRegisterProfile(); err != nil {
-		err = errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		err = errors.ErrInvalidInput.Wrap(err, "invalid input")
 		o.logger.Info(ctx, "invalid input", zap.Error(err))
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (o *profile) RegisterUserProfile(ctx context.Context, profile *model.Profil
 
 func (o *profile) UpdateUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error) {
 	if err := profile.ValidateUpdateProfile(); err != nil {
-		err = errors.ErrInvalidUserInput.Wrap(err, "invalid input")
+		err = errors.ErrInvalidInput.Wrap(err, "invalid input")
 		o.logger.Info(ctx, "invalid input", zap.Error(err))
 		return nil, err
 	}

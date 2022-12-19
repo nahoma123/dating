@@ -30,7 +30,7 @@ func (o *profile) Register(ctx *gin.Context) {
 	err := ctx.ShouldBind(&profile)
 	if err != nil {
 		o.logger.Info(ctx, zap.Error(err).String)
-		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
 		return
 	}
 
@@ -50,7 +50,7 @@ func (o *profile) UpdateProfile(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if err != nil || id == "" {
 		o.logger.Info(ctx, zap.Error(err).String)
-		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
 		return
 	}
 	profile.ProfileID = id

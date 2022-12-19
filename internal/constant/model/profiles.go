@@ -7,13 +7,14 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Profile struct {
 	// ID is the unique identifier of the user.
 	// It is automatically generated when the user is created.
-	ID        *int   `bson:"_id,omitempty" json:"_id,omitempty"`
-	ProfileID string `bson:"profile_id,omitempty" json:"profile_id,omitempty"`
+	Id        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ProfileID string             `bson:"profile_id,omitempty" json:"profile_id,omitempty"`
 	// Status is the status of the user.
 	// It is set to active by default after succesObjectIDs must be exactly 12 bytes long (got 0)sful registration.
 	User   *User  `bson:"user" json:"user,omitempty"`

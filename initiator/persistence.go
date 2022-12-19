@@ -35,6 +35,18 @@ func CreateIndexes(log logger.Logger, db *mongo.Database) {
 	if err != nil {
 		log.Debug(context.Background(), fmt.Sprint("create indexes error: ", err.Error()))
 	}
+
+	_, err = db.Collection(string(storage.Country)).Indexes().CreateMany(context.TODO(), []mongo.IndexModel{
+		{
+			Keys: bson.D{
+				bson.E{Key: "name", Value: 1},
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	})
+	if err != nil {
+		log.Debug(context.Background(), fmt.Sprint("create indexes error: ", err.Error()))
+	}
 }
 
 func InitPersistence(db *mongo.Database, log logger.Logger) Persistence {

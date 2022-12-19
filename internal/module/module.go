@@ -21,11 +21,11 @@ type ProfileModule interface {
 
 type MescModule interface {
 	CreateCountry(ctx context.Context, profile *model.Country) (*model.Country, error)
-	UpdateCountry(ctx context.Context, profile *model.Country) (*model.Country, error)
-	GetCountries(ctx context.Context, page int, perPage int) (*model.Country, error)
+	DeleteCountry(ctx context.Context, countryId string) error
+	GetCountries(ctx context.Context, page int, perPage int) ([]*model.Country, *model.MetaData, error)
 
-	CreateState(ctx context.Context, profile *model.Country) (*model.Country, error)
-	UpdateState(ctx context.Context, profile *model.Country) (*model.Country, error)
+	CreateState(ctx context.Context, profile *model.State) (*model.State, error)
+	DeleteState(ctx context.Context, id string) error
 	GetStates(ctx context.Context, page int, perPage int) (*model.Country, error)
 
 	CreateEthnicity(ctx context.Context, profile *model.Country) (*model.Country, error)

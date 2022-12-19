@@ -14,7 +14,7 @@ type ErrorType struct {
 var Error = []ErrorType{
 	{
 		ErrorCode: http.StatusBadRequest,
-		ErrorType: ErrInvalidUserInput,
+		ErrorType: ErrInvalidInput,
 	},
 	{
 		ErrorCode: http.StatusNotFound,
@@ -81,7 +81,7 @@ var (
 )
 
 var (
-	ErrInvalidUserInput    = errorx.NewType(invalidInput, "invalid user input")
+	ErrInvalidInput        = errorx.NewType(invalidInput, "invalid input")
 	ErrNoRecordFound       = errorx.NewType(dbError, "no record found")
 	ErrWriteError          = errorx.NewType(dbError, "could not write to db")
 	ErrReadError           = errorx.NewType(dbError, "could not read from db")

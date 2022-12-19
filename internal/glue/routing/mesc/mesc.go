@@ -24,7 +24,7 @@ func InitRoute(router *gin.RouterGroup, handler rest.Mesc, authMiddleware middle
 		},
 		{
 			Method:      "DELETE",
-			Path:        "/countries/:id",
+			Path:        "/countries/:country_id",
 			Handler:     handler.DeleteCountry,
 			Middlewares: []gin.HandlerFunc{},
 		},
@@ -36,7 +36,7 @@ func InitRoute(router *gin.RouterGroup, handler rest.Mesc, authMiddleware middle
 		},
 		{
 			Method:      "POST",
-			Path:        "/states",
+			Path:        "/countries/:country_id/states",
 			Handler:     handler.CreateState,
 			Middlewares: []gin.HandlerFunc{},
 		},

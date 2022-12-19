@@ -30,7 +30,7 @@ func (o *auth) Test(ctx *gin.Context) {
 	err := ctx.ShouldBind(&userParam)
 	if err != nil {
 		o.logger.Info(ctx, zap.Error(err).String)
-		_ = ctx.Error(errors.ErrInvalidUserInput.Wrap(err, "invalid input"))
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(err, "invalid input"))
 		return
 	}
 
