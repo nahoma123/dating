@@ -8,3 +8,4 @@ server:
   timeout: 30
 cloudinary:
   url: cloudinary://243736193233756:GWLJJHLDN5oaMsUAX5lnmfxTrgE@paymax
+  folder : /Users/Profile Photos

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Filter struct {
@@ -33,6 +34,20 @@ func AddFilter(fp FilterPagination, field, value, operator string) *FilterPagina
 		Operator: operator,
 	})
 	return &fp
+}
+
+func ExtractValueFromFilter(fp *FilterPagination, field string) string {
+	if fp == nil || fp.Filters == nil {
+		return ""
+	}
+
+	for _, filter := range fp.Filters {
+		if filter.Field == field {
+			return filter.Value
+		}
+	}
+
+	return ""
 }
 
 func ParseFilterPagination(c *gin.Context) *FilterPagination {
@@ -76,4 +91,31 @@ func ParseFilterPagination(c *gin.Context) *FilterPagination {
 	}
 
 	return &filterPagination
+}
+
+func LocationFilter(coordinates []float64, maxDistance int) bson.M {
+	return bson.M{
+		"location.coordinates": bson.M{
+			"$near": bson.M{
+				"$geometry": bson.M{
+					"type":        "Point",
+					"coordinates": coordinates,
+				},
+				"$maxDistance": maxDistance,
+			},
+		},
+	}
+}
+
+func DeleteFilter(fp *FilterPagination, field string) {
+	if fp == nil || fp.Filters == nil {
+		return
+	}
+
+	for i, filter := range fp.Filters {
+		if filter.Field == field {
+			fp.Filters = append(fp.Filters[:i], fp.Filters[i+1:]...)
+		}
+	}
+
 }

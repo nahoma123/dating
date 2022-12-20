@@ -33,7 +33,7 @@ func UploadImage(cld *cloudinary.Cloudinary, ctx context.Context, imageId string
 		PublicID:       imageId,
 		UniqueFilename: *api.Bool(false),
 		Overwrite:      *api.Bool(true),
-		Folder:         "/Users/Profile Photos",
+		Folder:         viper.GetString("cloudinary.folder"),
 	})
 	if err != nil {
 		return "", err

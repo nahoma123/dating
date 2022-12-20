@@ -13,7 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetResults(cxt context.Context, db *mongo.Database, collectionName string, filterPagination *FilterPagination, results *[]bson.M) error {
+/*
+Filters
+1. by gte for date, by gte for age [gte]
+2. equals [=]
+3. contains [contains]
+4. not equals [!=]
+*/
+func GetResults(cxt context.Context, db *mongo.Database, collectionName string, filterPagination *FilterPagination, results *[]bson.M, customerFilter bson.M) error {
 	// Get a reference to the collection
 	collection := db.Collection(collectionName)
 
@@ -23,7 +30,13 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 	// Iterate over filters and create filter stage documents
 	for _, f := range filterPagination.Filters {
 		var filter bson.M
-		if f.Operator == "=" {
+
+		if f.Operator == "gte" {
+			if f.Field == "created_at" || f.Field == "updated_at" {
+				filter = bson.M{f.Field: bson.M{"$gte": bson.M{"$date": f.Value}}}
+			}
+			filter = bson.M{f.Field: bson.M{"$gte": f.Value}}
+		} else if f.Operator == "=" {
 			filter = bson.M{f.Field: f.Value}
 		} else if f.Operator == "contains" {
 			filter = bson.M{f.Field: bson.M{"$regex": primitive.Regex{Pattern: f.Value, Options: "i"}}}

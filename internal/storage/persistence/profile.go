@@ -7,6 +7,7 @@ import (
 	"dating/internal/constant/model"
 	"dating/internal/storage"
 	"dating/platform/logger"
+	"strconv"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -93,9 +94,46 @@ func (p *profile) Get(ctx context.Context, id string) (*model.Profile, error) {
 func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
 	var results []bson.M
 
-	err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results)
+	distance := constant.ExtractValueFromFilter(filterPagination, "distance")
+	var distanceInt int
+	var err error
+	if distance != "" {
+		distanceInt, err = strconv.Atoi(distance)
+		if err != nil {
+			return nil, errors.ErrReadError.Wrap(err, "invalid location value")
+		}
+	}
+
+	// remove the location filter
+	constant.DeleteFilter(filterPagination, "distance")
+
+	profileId := constant.ExtractValueFromFilter(filterPagination, "profile_id")
+	if profileId == "" {
+		return nil, errors.ErrReadError.New("invalid user id")
+	}
+
+	pf, err := p.Get(ctx, profileId)
 	if err != nil {
 		return nil, err
+	}
+
+	location := []float64{}
+	if pf.Location != nil {
+		location = pf.Location.Coordinates
+	}
+
+	if len(location) == 2 {
+		filter := constant.LocationFilter(location, distanceInt)
+
+		err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results, filter)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results, nil)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var profiles []model.Profile

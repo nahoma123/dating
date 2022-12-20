@@ -212,7 +212,7 @@ func (msc *mesc) DeleteState(ctx context.Context, id string) error {
 func (mesc *mesc) GetEthnicities(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Ethnicity, error) {
 	var results []bson.M
 
-	err := constant.GetResults(ctx, mesc.db, string(storage.Ethnicity), filterPagination, &results)
+	err := constant.GetResults(ctx, mesc.db, string(storage.Ethnicity), filterPagination, &results, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +237,7 @@ func (mesc *mesc) GetEthnicities(ctx context.Context, filterPagination *constant
 func (mesc *mesc) GetStates(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.State, error) {
 	var results []bson.M
 
-	err := constant.GetResults(ctx, mesc.db, string(storage.State), filterPagination, &results)
+	err := constant.GetResults(ctx, mesc.db, string(storage.State), filterPagination, &results, nil)
 	if err != nil {
 		return nil, err
 	}
