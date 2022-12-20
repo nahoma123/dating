@@ -64,6 +64,12 @@ func InitRoute(router *gin.RouterGroup, handler rest.Mesc, authMiddleware middle
 			Handler:     handler.DeleteEthnicity,
 			Middlewares: []gin.HandlerFunc{},
 		},
+		{
+			Method:      "POST",
+			Path:        "/images/upload",
+			Handler:     handler.UploadImage,
+			Middlewares: []gin.HandlerFunc{},
+		},
 	}
 	routing.RegisterRoutes(router, oauthRoutes)
 }

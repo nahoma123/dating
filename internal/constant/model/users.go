@@ -1,9 +1,6 @@
 package model
 
 import (
-	"fmt"
-
-	"github.com/dongri/phonenumber"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/gofrs/uuid"
@@ -39,15 +36,15 @@ func (u User) Validate() error {
 		validation.Field(&u.MiddleName, validation.Required.Error("middle name is required")),
 		validation.Field(&u.LastName, validation.Required.Error("last name is required")),
 		validation.Field(&u.Email, is.EmailFormat.Error("email is not valid")),
-		validation.Field(&u.Phone, validation.Required.Error("phone is required"), validation.By(validatePhone)),
+		// validation.Field(&u.Phone, validation.Required.Error("phone is required"), validation.By(validatePhone)),
 		validation.Field(&u.Password, validation.When(u.Email != "", validation.Required.Error("password is required"), validation.Length(6, 32).Error("password must be between 6 and 32 characters"))),
 	)
 }
 
-func validatePhone(phone interface{}) error {
-	str := phonenumber.Parse(fmt.Sprintf("%v", phone), "ET")
-	if str == "" {
-		return fmt.Errorf("invalid phone number")
-	}
-	return nil
-}
+// func validatePhone(phone interface{}) error {
+// 	str := phonenumber.Parse(fmt.Sprintf("%v", phone), "ET")
+// 	if str == "" {
+// 		return fmt.Errorf("invalid phone number")
+// 	}
+// 	return nil
+// }

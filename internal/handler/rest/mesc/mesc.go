@@ -198,3 +198,8 @@ func (msc *mesc) GetStates(ctx *gin.Context) {
 	constant.SuccessResponse(ctx, http.StatusOK, states, ftr)
 
 }
+
+func (msc *mesc) UploadImage(ctx *gin.Context) {
+	cld := constant.Credentials()
+	constant.UploadImage(cld, ctx)
+}

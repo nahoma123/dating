@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type profile struct {
@@ -88,4 +88,29 @@ func (p *profile) Get(ctx context.Context, id string) (*model.Profile, error) {
 		return nil, err
 	}
 	return profile, nil
+}
+
+func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
+	var results []bson.M
+
+	err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results)
+	if err != nil {
+		return nil, err
+	}
+
+	var profiles []model.Profile
+	for _, result := range results {
+		var profile model.Profile
+		b, err := bson.Marshal(result)
+		if err != nil {
+			return nil, err
+		}
+		err = bson.Unmarshal(b, &profile)
+		if err != nil {
+			return nil, err
+		}
+		profiles = append(profiles, profile)
+	}
+
+	return profiles, nil
 }

@@ -12,6 +12,8 @@ type Profile interface {
 	Register(ctx *gin.Context)
 	UpdateProfile(ctx *gin.Context)
 	GetProfile(ctx *gin.Context)
+
+	GetCustomers(ctx *gin.Context)
 }
 
 type Mesc interface {
@@ -25,5 +27,6 @@ type Mesc interface {
 
 	CreateEthnicity(ctx *gin.Context)
 	DeleteEthnicity(ctx *gin.Context)
+	UploadImage(ctx *gin.Context)
 	GetEthnicities(ctx *gin.Context)
 }

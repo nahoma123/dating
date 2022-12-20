@@ -7,6 +7,7 @@ import (
 	"dating/internal/handler/rest"
 	"dating/internal/module"
 	"dating/platform/logger"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -74,4 +75,22 @@ func (o *profile) GetProfile(ctx *gin.Context) {
 	}
 
 	constant.SuccessResponse(ctx, http.StatusCreated, profile, nil)
+}
+
+func (o *profile) GetCustomers(ctx *gin.Context) {
+	ftr := constant.ParseFilterPagination(ctx)
+	user_id := ctx.GetString("x-user-id")
+
+	url := ctx.Request.URL.Path
+	fmt.Println("url", url, "user_id", user_id)
+	ftr = constant.AddFilter(*ftr, "profile_id", user_id, "!=")
+	customers, err := o.ProfileModule.GetCustomers(ctx, ftr)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
+
 }

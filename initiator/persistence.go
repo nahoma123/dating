@@ -24,9 +24,9 @@ func CreateIndexes(log logger.Logger, db *mongo.Database) {
 	_, err := db.Collection(string(storage.Profile)).Indexes().CreateMany(context.TODO(), []mongo.IndexModel{
 		{
 			Keys: bson.D{
-				bson.E{Key: "id", Value: 1},
+				bson.E{Key: "_id", Value: 1},
 				bson.E{Key: "email", Value: 1},
-				bson.E{Key: "username", Value: 1},
+				bson.E{Key: "user_name", Value: 1},
 				bson.E{Key: "phone", Value: 1},
 			},
 			Options: options.Index().SetUnique(true),

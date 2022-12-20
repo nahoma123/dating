@@ -18,6 +18,8 @@ type ProfileModule interface {
 	GetUserProfile(ctx context.Context, Id string) (*model.Profile, error)
 	RegisterUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error)
 	UpdateUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error)
+
+	GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error)
 }
 
 type MescModule interface {

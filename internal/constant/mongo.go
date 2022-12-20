@@ -27,6 +27,8 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 			filter = bson.M{f.Field: f.Value}
 		} else if f.Operator == "contains" {
 			filter = bson.M{f.Field: bson.M{"$regex": primitive.Regex{Pattern: f.Value, Options: "i"}}}
+		} else if f.Operator == "!=" {
+			filter = bson.M{f.Field: bson.M{"$ne": f.Value}}
 		} else {
 			// Handle other operator types
 		}

@@ -21,6 +21,7 @@ type Profile struct {
 	Status string `json:"status,omitempty"`
 
 	// about me info
+	IsSpotLight        bool   `bson:"is_spot_light,omitempty" json:"is_spot_light"`
 	Title              string `bson:"title,omitempty" json:"title,omitempty"`
 	AboutMe            string `bson:"about_me,omitempty" json:"about_me,omitempty"`
 	Age                int    `bson:"age,omitempty" json:"age,omitempty"`
@@ -34,7 +35,7 @@ type Profile struct {
 	Country        string `bson:"country" json:"country,omitempty"`
 	State          string `bson:"state" json:"state,omitempty"`
 	Ethnicity      string `bson:"ethnicity" json:"ethnicity,omitempty"`
-	LanguageSpoken string `bson:"language_spoken" json:"language,omitempty"`
+	LanguageSpoken string `bson:"language_spoken" json:"language_spoken,omitempty"`
 
 	LookingFor []string `bson:"looking_for,omitempty" json:"looking_for"`
 
@@ -72,14 +73,14 @@ func (u Profile) ValidateRegisterProfile() error {
 		validation.Field(&u.College, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "college"))),
 		validation.Field(&u.CompanyName, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "company_name"))),
 		validation.Field(&u.Country, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "country"))),
-		validation.Field(&u.DrinkAlchol, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "drink_alchol"))),
+		// validation.Field(&u.DrinkAlchol, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "drink_alchol"))),
 		validation.Field(&u.Ethnicity, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "ethnicity"))),
 		validation.Field(&u.Excercise, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "excercise"))),
 
 		validation.Field(&u.Job, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "job"))),
 		validation.Field(&u.Gender, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "gender"))),
 		validation.Field(&u.Height, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "height"))),
-		validation.Field(&u.LanguageSpoken, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "lauguage_spoken"))),
+		validation.Field(&u.LanguageSpoken, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "language_spoken"))),
 		validation.Field(&u.LookingFor, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "looking_for"))),
 		validation.Field(&u.RelationShipStatus, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "relation_ship_status"))),
 		validation.Field(&u.RelationShipStatus, validation.In("Single", "InRelationShip")),

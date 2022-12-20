@@ -14,6 +14,7 @@ import (
 
 type AuthMiddleware interface {
 	Authentication() gin.HandlerFunc
+	BindUser(id string) gin.HandlerFunc
 }
 
 type authMiddleware struct {
@@ -63,6 +64,13 @@ func (a *authMiddleware) Authentication() gin.HandlerFunc {
 			return
 		}
 		ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), constant.Context("x-user-id"), claims.Subject))
+		ctx.Next()
+	}
+}
+
+func (a *authMiddleware) BindUser(id string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Set("x-user-id", id)
 		ctx.Next()
 	}
 }

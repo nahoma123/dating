@@ -2,6 +2,7 @@ package profile
 
 import (
 	"context"
+	"dating/internal/constant"
 	"dating/internal/constant/errors"
 	"dating/internal/constant/model"
 	"dating/internal/module"
@@ -61,4 +62,21 @@ func (o *profile) GetUserProfile(ctx context.Context, id string) (*model.Profile
 		return nil, err
 	}
 	return profile, nil
+}
+
+func (o *profile) GetUsers(ctx context.Context, id string) (*model.Profile, error) {
+	profile, err := o.profileStorage.Get(ctx, id)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return nil, err
+	}
+	return profile, nil
+}
+
+func (o *profile) GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
+	customers, err := o.profileStorage.GetCustomers(ctx, filterPagination)
+	if err != nil {
+		return nil, err
+	}
+	return customers, nil
 }
