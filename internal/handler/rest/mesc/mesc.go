@@ -7,10 +7,13 @@ import (
 	"dating/internal/handler/rest"
 	"dating/internal/module"
 	"dating/platform/logger"
+	"fmt"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 )
 
@@ -201,5 +204,33 @@ func (msc *mesc) GetStates(ctx *gin.Context) {
 
 func (msc *mesc) UploadImage(ctx *gin.Context) {
 	cld := constant.Credentials()
-	constant.UploadImage(cld, ctx)
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	// Open the file
+	f, err := file.Open()
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	defer f.Close()
+
+	ext := filepath.Ext(file.Filename)
+	imageName := fmt.Sprintf("%s%s", uuid.NewV4(), ext)
+
+	url, err := constant.UploadImage(cld, ctx, imageName, f)
+	if err != nil {
+		msc.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, url, nil)
+
 }
