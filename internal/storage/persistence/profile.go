@@ -102,34 +102,39 @@ func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.F
 		if err != nil {
 			return nil, errors.ErrReadError.Wrap(err, "invalid location value")
 		}
-	}
 
-	// remove the location filter
-	constant.DeleteFilter(filterPagination, "distance")
+		// remove the location filter
+		constant.DeleteFilter(filterPagination, "distance")
 
-	profileId := constant.ExtractValueFromFilter(filterPagination, "profile_id")
-	if profileId == "" {
-		return nil, errors.ErrReadError.New("invalid user id")
-	}
+		profileId := constant.ExtractValueFromFilter(filterPagination, "profile_id")
+		if profileId == "" {
+			return nil, errors.ErrReadError.New("invalid user id")
+		}
 
-	pf, err := p.Get(ctx, profileId)
-	if err != nil {
-		return nil, err
-	}
-
-	location := []float64{}
-	if pf.Location != nil {
-		location = pf.Location.Coordinates
-	}
-
-	if len(location) == 2 {
-		filter := constant.LocationFilter(location, distanceInt)
-
-		err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results, filter)
+		pf, err := p.Get(ctx, profileId)
 		if err != nil {
 			return nil, err
 		}
+
+		location := []float64{}
+		if pf.Location != nil {
+			location = pf.Location
+		}
+
+		if len(location) == 2 {
+			filter := constant.LocationFilter(location, distanceInt)
+
+			err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results, filter)
+			if err != nil {
+				return nil, err
+			}
+		}
 	} else {
+		profileId := constant.ExtractValueFromFilter(filterPagination, "profile_id")
+		if profileId == "" {
+			return nil, errors.ErrReadError.New("invalid user id")
+		}
+
 		err := constant.GetResults(ctx, p.db, string(storage.Profile), filterPagination, &results, nil)
 		if err != nil {
 			return nil, err

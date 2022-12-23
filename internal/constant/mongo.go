@@ -15,12 +15,12 @@ import (
 
 /*
 Filters
-1. by gte for date, by gte for age [gte]
-2. equals [=]
-3. contains [contains]
-4. not equals [!=]
+ 1. by gte for date, by gte for age [gte]
+ 2. equals [=]
+ 3. contains [contains]
+ 4. not equals [!=]
 */
-func GetResults(cxt context.Context, db *mongo.Database, collectionName string, filterPagination *FilterPagination, results *[]bson.M, customerFilter bson.M) error {
+func GetResults(cxt context.Context, db *mongo.Database, collectionName string, filterPagination *FilterPagination, results *[]bson.M, geoFilter bson.M) error {
 	// Get a reference to the collection
 	collection := db.Collection(collectionName)
 
@@ -33,9 +33,15 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 
 		if f.Operator == "gte" {
 			if f.Field == "created_at" || f.Field == "updated_at" {
-				filter = bson.M{f.Field: bson.M{"$gte": bson.M{"$date": f.Value}}}
+				t, err := time.Parse("2006-01-02T15:04:05", f.Value)
+				if err != nil {
+					fmt.Printf("Error parsing time: %v", err)
+					return errors.ErrAcessError.Wrap(err, "wrong time format")
+				}
+				filter = bson.M{f.Field: bson.M{"$gte": t}}
+			} else {
+				filter = bson.M{"created_at": bson.M{"$gte": f.Value}}
 			}
-			filter = bson.M{f.Field: bson.M{"$gte": f.Value}}
 		} else if f.Operator == "=" {
 			filter = bson.M{f.Field: f.Value}
 		} else if f.Operator == "contains" {
@@ -49,9 +55,15 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 	}
 
 	// Create pipeline with filter stage if there are filters
-	var pipeline mongo.Pipeline
+	var pipeline []bson.M
+
+	pipeline = []bson.M{}
+	if len(geoFilter) > 0 {
+		pipeline = append(pipeline, geoFilter)
+	}
+
 	if len(filters) > 0 {
-		pipeline = mongo.Pipeline{bson.D{{Key: "$match", Value: bson.D{{Key: "$and", Value: filters}}}}}
+		pipeline = append(pipeline, bson.M{"$match": bson.M{"$and": filters}})
 	}
 
 	// Add sort stage to pipeline if there are sort fields
@@ -66,16 +78,19 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 				// Handle other sort directions
 			}
 		}
-		pipeline = append(pipeline, bson.D{{Key: "$sort", Value: bson.D{{Key: "$and", Value: sortFields}}}})
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"$and": sortFields}})
 	}
 
 	// Add pagination stages to pipeline
 	skip := (filterPagination.Pagination.Page - 1) * filterPagination.Pagination.PerPage
-	pipeline = append(pipeline, bson.D{{Key: "$skip", Value: skip}}, bson.D{{Key: "$limit", Value: filterPagination.Pagination.PerPage}})
+	pipeline = append(pipeline, bson.M{"$skip": skip}, bson.M{"$limit": filterPagination.Pagination.PerPage})
 
 	// Execute pipeline and retrieve results
-	ctx, cancel := context.WithTimeout(cxt, 10*time.Second)
+	ctx, cancel := context.WithTimeout(cxt, 30*time.Second)
 	defer cancel()
+
+	fmt.Printf("Slice: %#v\n", pipeline)
+
 	cur, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return errors.ErrInternalServerError.Wrap(err, errors.UnknownDbError)

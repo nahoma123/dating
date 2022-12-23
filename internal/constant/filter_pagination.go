@@ -95,14 +95,13 @@ func ParseFilterPagination(c *gin.Context) *FilterPagination {
 
 func LocationFilter(coordinates []float64, maxDistance int) bson.M {
 	return bson.M{
-		"location.coordinates": bson.M{
-			"$near": bson.M{
-				"$geometry": bson.M{
-					"type":        "Point",
-					"coordinates": coordinates,
-				},
-				"$maxDistance": maxDistance,
-			},
+		"$geoNear": bson.M{
+			"near":          coordinates,
+			"distanceField": "distance",
+			"maxDistance":   maxDistance,
+			"spherical":     true,
+			"includeLocs":   "location",
+			"uniqueDocs":    true,
 		},
 	}
 }

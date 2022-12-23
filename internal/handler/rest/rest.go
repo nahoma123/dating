@@ -14,6 +14,7 @@ type Profile interface {
 	GetProfile(ctx *gin.Context)
 
 	GetCustomers(ctx *gin.Context)
+	DiscoverNewUsers(ctx *gin.Context)
 }
 
 type Mesc interface {

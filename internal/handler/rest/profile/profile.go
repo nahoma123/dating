@@ -9,8 +9,10 @@ import (
 	"dating/platform/logger"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -81,8 +83,7 @@ func (o *profile) GetCustomers(ctx *gin.Context) {
 	ftr := constant.ParseFilterPagination(ctx)
 	user_id := ctx.GetString("x-user-id")
 
-	url := ctx.Request.URL.Path
-	fmt.Println("url", url, "user_id", user_id)
+	// url := ctx.Request.URL.Path
 	ftr = constant.AddFilter(*ftr, "profile_id", user_id, "!=")
 	customers, err := o.ProfileModule.GetCustomers(ctx, ftr)
 	if err != nil {
@@ -93,4 +94,30 @@ func (o *profile) GetCustomers(ctx *gin.Context) {
 
 	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
 
+}
+
+func (o *profile) DiscoverNewUsers(ctx *gin.Context) {
+	ftr := constant.ParseFilterPagination(ctx)
+	user_id := ctx.GetString("x-user-id")
+
+	// url := ctx.Request.URL.Path
+	ftr = constant.AddFilter(*ftr, "profile_id", user_id, "!=")
+
+	constant.DeleteFilter(ftr, "created_at")
+
+	oneMonthAgo := time.Now().AddDate(viper.GetInt("matching.new_users_time.year"), viper.GetInt("matching.new_users_time.month"), viper.GetInt("matching.new_users_time.month"))
+
+	// Format the time as an ISO 8601 formatted string.
+	isoString := oneMonthAgo.Format("2006-01-02T15:04:05")
+
+	ftr = constant.AddFilter(*ftr, "created_at", isoString, "gte")
+	ftr = constant.AddFilter(*ftr, "distance", fmt.Sprintf("%d", viper.GetInt("matching.nearby_distance")), "gte")
+	customers, err := o.ProfileModule.GetCustomers(ctx, ftr)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
 }

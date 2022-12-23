@@ -9,3 +9,9 @@ server:
 cloudinary:
   url: cloudinary://243736193233756:GWLJJHLDN5oaMsUAX5lnmfxTrgE@paymax
   folder : /Users/Profile Photos
+matching:
+  new_users_time:
+    year: 0
+    month: -1
+    day: 0
+  nearby_distance: 7000 

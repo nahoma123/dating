@@ -17,7 +17,7 @@ type Profile struct {
 	ProfileID string             `bson:"profile_id,omitempty" json:"profile_id,omitempty"`
 	// Status is the status of the user.
 	// It is set to active by default after succesObjectIDs must be exactly 12 bytes long (got 0)sful registration.
-	User   *User  `bson:"user" json:"user,omitempty"`
+	User   *User  `bson:"user,omitempty" json:"user,omitempty"`
 	Status string `json:"status,omitempty"`
 
 	// about me info
@@ -54,7 +54,8 @@ type Profile struct {
 	// CreatedAt is the time when the user is created.
 	// It is automatically set when the user is created.
 
-	Location *Location `bson:"location,omitempty" json:"location,omitempty"`
+	Distance float64   `bson:"distance" json:"distance"`
+	Location []float64 `bson:"location,omitempty" json:"location,omitempty"`
 
 	CreatedAt time.Time `bson:"created_at,omitempty" json:"created_at,omitempty"`
 	UpdatedAt time.Time `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
@@ -66,6 +67,7 @@ func (u Profile) ValidateRegisterProfile() error {
 			"user": errors.New("is required"),
 		}
 	}
+
 	return validation.ValidateStruct(&u, validation.Field(&u.User), // validation.Field(&u.User.FirstName, validation.Required.Error("first name is required")),
 		validation.Field(&u.AboutMe, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "about_me"))),
 		validation.Field(&u.Age, validation.Required.Error(fmt.Sprintf(errorsconstats.FeildIsRequired, "age"))),
