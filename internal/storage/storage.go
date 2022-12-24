@@ -29,6 +29,9 @@ type ProfileStorage interface {
 
 	MakeFavorite(ctx context.Context, userID string, profileID string) error
 	RemoveFavorite(ctx context.Context, userID string, profileID string) error
+
+	DisLikeProfile(ctx context.Context, userID string, profileID string) error
+	RemoveDislikeProfile(ctx context.Context, userID string, profileID string) error
 }
 
 type MescStorage interface {

@@ -74,6 +74,18 @@ func InitRoute(router *gin.RouterGroup, handler rest.Profile, authMiddleware mid
 			Handler:     handler.RemoveFavorite,
 			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
 		},
+		{
+			Method:      "POST",
+			Path:        "/customers/:profile_id/dislike",
+			Handler:     handler.DisLikeProfile,
+			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
+		},
+		{
+			Method:      "DELETE",
+			Path:        "/customers/:profile_id/remove_dislike",
+			Handler:     handler.RemoveDisLikeProfile,
+			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
+		},
 	}
 	routing.RegisterRoutes(router, profileRoutes)
 }

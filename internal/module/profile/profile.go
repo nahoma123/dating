@@ -118,3 +118,23 @@ func (o *profile) RemoveFavorite(ctx context.Context, userID string, profileID s
 	}
 	return nil
 }
+
+func (o *profile) DisLikeProfile(ctx context.Context, userID string, profileID string) error {
+	//
+	err := o.profileStorage.DisLikeProfile(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}
+
+func (o *profile) RemoveDisLikeProfile(ctx context.Context, userID string, profileID string) error {
+	//
+	err := o.profileStorage.RemoveDislikeProfile(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}

@@ -26,6 +26,9 @@ type ProfileModule interface {
 
 	MakeFavorite(ctx context.Context, userID string, profileID string) error
 	RemoveFavorite(ctx context.Context, userID string, profileID string) error
+
+	DisLikeProfile(ctx context.Context, userID string, profileID string) error
+	RemoveDisLikeProfile(ctx context.Context, userID string, profileID string) error
 }
 
 type MescModule interface {

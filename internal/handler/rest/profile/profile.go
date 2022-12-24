@@ -237,3 +237,45 @@ func (o *profile) RemoveFavorite(ctx *gin.Context) {
 
 	constant.SuccessResponse(ctx, http.StatusCreated, "removed favorite", nil)
 }
+
+func (o *profile) DisLikeProfile(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.DisLikeProfile(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "profile disliked", nil)
+}
+
+func (o *profile) RemoveDisLikeProfile(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.RemoveDisLikeProfile(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "removed dislike", nil)
+}

@@ -192,6 +192,11 @@ func (p *profile) LikeProfile(ctx context.Context, userID string, profileID stri
 }
 
 func (p *profile) UnlikeProfile(ctx context.Context, userID string, profileID string) error {
+	err := p.RemoveDislikeProfile(ctx, userID, profileID)
+	if err != nil {
+		return errors.ErrInternalServerError.Wrap(err, err.Error())
+	}
+
 	// create filter to find the user's Likes document
 	filter := bson.M{"user_id": userID}
 
@@ -199,7 +204,7 @@ func (p *profile) UnlikeProfile(ctx context.Context, userID string, profileID st
 	update := bson.M{"$pull": bson.M{"liked_profile_ids": profileID}}
 
 	// use UpdateOne to apply the update
-	_, err := p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update)
+	_, err = p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}
@@ -244,6 +249,54 @@ func (p *profile) RemoveFavorite(ctx context.Context, userID string, profileID s
 
 	// use UpdateOne to apply the update
 	_, err := p.db.Collection(string(storage.Favorite)).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *profile) DisLikeProfile(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user being disliked
+	filter := bson.M{"profile_id": profileID}
+
+	err := p.UnlikeProfile(ctx, userID, profileID)
+	if err != nil {
+		return errors.ErrInternalServerError.Wrap(err, err.Error())
+	}
+	// use FindOne to check if the user being disliked exists
+	var result bson.M
+	err = p.db.Collection(string(storage.Profile)).FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// return an error if the user being disliked does not exist
+			return fmt.Errorf("user with ID %s does not exist", profileID)
+		}
+		return err
+	}
+
+	// create filter to find the user's Dislikes document
+	filter = bson.M{"user_id": userID}
+
+	// create update to add the profile ID to the DislikedProfileIDs array
+	update := bson.M{"$addToSet": bson.M{"disliked_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err = p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *profile) RemoveDislikeProfile(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user's Dislikes document
+	filter := bson.M{"user_id": userID}
+
+	// create update to remove the profile ID from the DislikedProfileIDs array
+	update := bson.M{"$pull": bson.M{"disliked_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err := p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}

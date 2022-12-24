@@ -22,6 +22,9 @@ type Profile interface {
 
 	MakeFavorite(ctx *gin.Context)
 	RemoveFavorite(ctx *gin.Context)
+
+	DisLikeProfile(ctx *gin.Context)
+	RemoveDisLikeProfile(ctx *gin.Context)
 }
 
 type Mesc interface {
