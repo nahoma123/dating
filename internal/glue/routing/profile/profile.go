@@ -86,6 +86,12 @@ func InitRoute(router *gin.RouterGroup, handler rest.Profile, authMiddleware mid
 			Handler:     handler.RemoveDisLikeProfile,
 			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
 		},
+		{
+			Method:      "GET",
+			Path:        "/customers/recommendations",
+			Handler:     handler.GetRecommendations,
+			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
+		},
 	}
 	routing.RegisterRoutes(router, profileRoutes)
 }

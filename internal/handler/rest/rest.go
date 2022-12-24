@@ -25,6 +25,7 @@ type Profile interface {
 
 	DisLikeProfile(ctx *gin.Context)
 	RemoveDisLikeProfile(ctx *gin.Context)
+	GetRecommendations(ctx *gin.Context)
 }
 
 type Mesc interface {

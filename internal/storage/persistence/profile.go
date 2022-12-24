@@ -93,6 +93,18 @@ func (p *profile) Get(ctx context.Context, id string) (*model.Profile, error) {
 	return profile, nil
 }
 
+func (p *profile) GetLike(ctx context.Context, user_id string) (*model.Likes, error) {
+	profile := &model.Likes{}
+	err := p.db.Collection(string(storage.Like)).FindOne(ctx, bson.M{"user_id": user_id}).Decode(profile)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.ErrNoRecordFound.New(errors.RecordNotfound)
+		}
+		return nil, err
+	}
+	return profile, nil
+}
+
 func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
 	var results []bson.M
 
@@ -301,4 +313,61 @@ func (p *profile) RemoveDislikeProfile(ctx context.Context, userID string, profi
 		return err
 	}
 	return nil
+}
+
+func (p *profile) GetRecommendations(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
+	var results []bson.M
+
+	distance := constant.ExtractValueFromFilter(filterPagination, "distance")
+	var distanceInt int
+	var err error
+
+	distanceInt, err = strconv.Atoi(distance)
+	if err != nil {
+		return nil, errors.ErrReadError.Wrap(err, "invalid location value")
+	}
+
+	// remove the location filter
+	constant.DeleteFilter(filterPagination, "distance")
+
+	profileId := constant.ExtractValueFromFilter(filterPagination, "profile_id")
+	if profileId == "" {
+		return nil, errors.ErrReadError.New("invalid user id")
+	}
+
+	pf, err := p.Get(ctx, profileId)
+	if err != nil {
+		return nil, err
+	}
+
+	location := []float64{}
+
+	if pf.Location != nil {
+		location = pf.Location.Coordinates
+	}
+
+	if len(location) == 2 {
+		filter := constant.LocationFilter(location, distanceInt)
+		like, _ := p.GetLike(ctx, profileId)
+		err := constant.GetRecommendationsDb(ctx, p.db, string(storage.Profile), filterPagination, &results, filter, like.DisLikedProfileIDs)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var profiles []model.Profile
+	for _, result := range results {
+		var profile model.Profile
+		b, err := bson.Marshal(result)
+		if err != nil {
+			return nil, err
+		}
+		err = bson.Unmarshal(b, &profile)
+		if err != nil {
+			return nil, err
+		}
+		profiles = append(profiles, profile)
+	}
+
+	return profiles, nil
 }

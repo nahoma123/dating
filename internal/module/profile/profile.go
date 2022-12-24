@@ -138,3 +138,11 @@ func (o *profile) RemoveDisLikeProfile(ctx context.Context, userID string, profi
 	}
 	return nil
 }
+
+func (o *profile) GetRecommendations(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error) {
+	recommendations, err := o.profileStorage.GetRecommendations(ctx, filterPagination)
+	if err != nil {
+		return nil, err
+	}
+	return recommendations, nil
+}

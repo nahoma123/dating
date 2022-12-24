@@ -30,6 +30,7 @@ type ProfileStorage interface {
 	MakeFavorite(ctx context.Context, userID string, profileID string) error
 	RemoveFavorite(ctx context.Context, userID string, profileID string) error
 
+	GetRecommendations(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error)
 	DisLikeProfile(ctx context.Context, userID string, profileID string) error
 	RemoveDislikeProfile(ctx context.Context, userID string, profileID string) error
 }

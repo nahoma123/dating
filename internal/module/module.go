@@ -29,6 +29,7 @@ type ProfileModule interface {
 
 	DisLikeProfile(ctx context.Context, userID string, profileID string) error
 	RemoveDisLikeProfile(ctx context.Context, userID string, profileID string) error
+	GetRecommendations(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error)
 }
 
 type MescModule interface {

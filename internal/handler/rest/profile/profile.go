@@ -279,3 +279,23 @@ func (o *profile) RemoveDisLikeProfile(ctx *gin.Context) {
 
 	constant.SuccessResponse(ctx, http.StatusCreated, "removed dislike", nil)
 }
+
+func (o *profile) GetRecommendations(ctx *gin.Context) {
+	ftr := constant.ParseFilterPagination(ctx)
+	user_id := ctx.GetString("x-user-id")
+
+	// url := ctx.Request.URL.Path
+	constant.DeleteFilter(ftr, "profile_id")
+
+	ftr = constant.AddFilter(*ftr, "profile_id", user_id, "!=")
+	ftr = constant.AddFilter(*ftr, "distance", fmt.Sprintf("%d", viper.GetInt("matching.nearby_distance")), "gte")
+	// ftr.Pagination.Sort = map[string]string{"created_at": "desc"}
+	customers, err := o.ProfileModule.GetRecommendations(ctx, ftr)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
+}
