@@ -14,6 +14,7 @@ import (
 	"github.com/gofrs/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type profile struct {
@@ -159,4 +160,92 @@ func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.F
 	}
 
 	return profiles, nil
+}
+
+func (p *profile) LikeProfile(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user being liked
+	filter := bson.M{"profile_id": profileID}
+
+	// use FindOne to check if the user being liked exists
+	var result bson.M
+	err := p.db.Collection(string(storage.Profile)).FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// return an error if the user being liked does not exist
+			return fmt.Errorf("user with ID %s does not exist", profileID)
+		}
+		return err
+	}
+
+	// create filter to find the user's Likes document
+	filter = bson.M{"user_id": userID}
+
+	// create update to add the profile ID to the LikedProfileIDs array
+	update := bson.M{"$addToSet": bson.M{"liked_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err = p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *profile) UnlikeProfile(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user's Likes document
+	filter := bson.M{"user_id": userID}
+
+	// create update to remove the profile ID from the LikedProfileIDs array
+	update := bson.M{"$pull": bson.M{"liked_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err := p.db.Collection(string(storage.Like)).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *profile) MakeFavorite(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user being favorite
+	filter := bson.M{"profile_id": profileID}
+
+	// use FindOne to check if the user being favorite exists
+	var result bson.M
+	err := p.db.Collection(string(storage.Profile)).FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// return an error if the user being favorite does not exist
+			return fmt.Errorf("user with ID %s does not exist", profileID)
+		}
+		return err
+	}
+
+	// create filter to find the user's Favorites document
+	filter = bson.M{"user_id": userID}
+
+	// create update to add the profile ID to the favoriteProfileIDs array
+	update := bson.M{"$addToSet": bson.M{"favorite_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err = p.db.Collection(string(storage.Favorite)).UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *profile) RemoveFavorite(ctx context.Context, userID string, profileID string) error {
+	// create filter to find the user's Favorite document
+	filter := bson.M{"user_id": userID}
+
+	// create update to remove the profile ID from the LikedProfileIDs array
+	update := bson.M{"$pull": bson.M{"favorite_profile_ids": profileID}}
+
+	// use UpdateOne to apply the update
+	_, err := p.db.Collection(string(storage.Favorite)).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }

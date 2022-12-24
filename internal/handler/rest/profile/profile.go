@@ -96,6 +96,12 @@ func (o *profile) GetCustomers(ctx *gin.Context) {
 
 }
 
+/*
+*
+
+	Its mainly for fetching nearby new users. the nearby duration is set on config
+	It returns distance from the user
+*/
 func (o *profile) DiscoverNewUsers(ctx *gin.Context) {
 	ftr := constant.ParseFilterPagination(ctx)
 	user_id := ctx.GetString("x-user-id")
@@ -122,6 +128,13 @@ func (o *profile) DiscoverNewUsers(ctx *gin.Context) {
 	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
 }
 
+/*
+*
+
+	Its mainly for fetching users by interest i.e provided on the query
+	It returns distance from the user
+	It doesn't set distance limitation on the results
+*/
 func (o *profile) DiscoverUsers(ctx *gin.Context) {
 	ftr := constant.ParseFilterPagination(ctx)
 	user_id := ctx.GetString("x-user-id")
@@ -139,4 +152,88 @@ func (o *profile) DiscoverUsers(ctx *gin.Context) {
 	}
 
 	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
+}
+
+func (o *profile) LikeProfile(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.LikeProfile(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "profile liked", nil)
+}
+
+func (o *profile) UnLikeProfile(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.UnLikeProfile(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "removed like", nil)
+}
+
+func (o *profile) MakeFavorite(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.MakeFavorite(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "made profile favorite", nil)
+}
+
+func (o *profile) RemoveFavorite(ctx *gin.Context) {
+	profile_id := ctx.Param("profile_id")
+
+	user_id := ctx.GetString("x-user-id")
+
+	if profile_id == "" {
+		o.logger.Info(ctx, zap.Error(fmt.Errorf("empty id")).String)
+		_ = ctx.Error(errors.ErrInvalidInput.Wrap(fmt.Errorf("empty id"), "invalid input"))
+		return
+	}
+
+	err := o.ProfileModule.RemoveFavorite(ctx, user_id, profile_id)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusCreated, "removed favorite", nil)
 }

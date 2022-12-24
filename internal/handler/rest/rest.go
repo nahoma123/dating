@@ -16,6 +16,12 @@ type Profile interface {
 	GetCustomers(ctx *gin.Context)
 	DiscoverNewUsers(ctx *gin.Context)
 	DiscoverUsers(ctx *gin.Context)
+
+	LikeProfile(ctx *gin.Context)
+	UnLikeProfile(ctx *gin.Context)
+
+	MakeFavorite(ctx *gin.Context)
+	RemoveFavorite(ctx *gin.Context)
 }
 
 type Mesc interface {

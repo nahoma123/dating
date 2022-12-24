@@ -80,3 +80,41 @@ func (o *profile) GetCustomers(ctx context.Context, filterPagination *constant.F
 	}
 	return customers, nil
 }
+
+func (o *profile) LikeProfile(ctx context.Context, userID string, profileID string) error {
+	//
+	err := o.profileStorage.LikeProfile(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}
+
+func (o *profile) UnLikeProfile(ctx context.Context, userID string, profileID string) error {
+	//
+	err := o.profileStorage.UnlikeProfile(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}
+
+func (o *profile) MakeFavorite(ctx context.Context, userID string, profileID string) error {
+	err := o.profileStorage.MakeFavorite(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}
+
+func (o *profile) RemoveFavorite(ctx context.Context, userID string, profileID string) error {
+	err := o.profileStorage.RemoveFavorite(ctx, userID, profileID)
+	if err != nil {
+		o.logger.Warn(ctx, err.Error())
+		return err
+	}
+	return nil
+}

@@ -20,6 +20,12 @@ type ProfileModule interface {
 	UpdateUserProfile(ctx context.Context, profile *model.Profile) (*model.Profile, error)
 
 	GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error)
+
+	LikeProfile(ctx context.Context, userID string, profileID string) error
+	UnLikeProfile(ctx context.Context, userID string, profileID string) error
+
+	MakeFavorite(ctx context.Context, userID string, profileID string) error
+	RemoveFavorite(ctx context.Context, userID string, profileID string) error
 }
 
 type MescModule interface {

@@ -14,6 +14,8 @@ const (
 	Country   DatabaseCollection = "countries"
 	State     DatabaseCollection = "states"
 	Ethnicity DatabaseCollection = "ethnicities"
+	Like      DatabaseCollection = "likes"
+	Favorite  DatabaseCollection = "favorites"
 )
 
 type ProfileStorage interface {
@@ -21,6 +23,12 @@ type ProfileStorage interface {
 	Update(ctx context.Context, profile *model.Profile) (*model.Profile, error)
 	Get(ctx context.Context, id string) (*model.Profile, error)
 	GetCustomers(ctx context.Context, filterPagination *constant.FilterPagination) ([]model.Profile, error)
+
+	LikeProfile(ctx context.Context, userID string, profileID string) error
+	UnlikeProfile(ctx context.Context, userID string, profileID string) error
+
+	MakeFavorite(ctx context.Context, userID string, profileID string) error
+	RemoveFavorite(ctx context.Context, userID string, profileID string) error
 }
 
 type MescStorage interface {
