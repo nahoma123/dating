@@ -121,3 +121,22 @@ func (o *profile) DiscoverNewUsers(ctx *gin.Context) {
 
 	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
 }
+
+func (o *profile) DiscoverUsers(ctx *gin.Context) {
+	ftr := constant.ParseFilterPagination(ctx)
+	user_id := ctx.GetString("x-user-id")
+
+	// url := ctx.Request.URL.Path
+	ftr = constant.AddFilter(*ftr, "profile_id", user_id, "!=")
+
+	ftr = constant.AddFilter(*ftr, "distance", fmt.Sprintf("%d", viper.GetInt("matching.all_distance")), "gte")
+
+	customers, err := o.ProfileModule.GetCustomers(ctx, ftr)
+	if err != nil {
+		o.logger.Info(ctx, zap.Error(err).String)
+		_ = ctx.Error(err)
+		return
+	}
+
+	constant.SuccessResponse(ctx, http.StatusOK, customers, ftr)
+}

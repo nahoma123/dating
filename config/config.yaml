@@ -14,4 +14,5 @@ matching:
     year: 0
     month: -1
     day: 0
-  nearby_distance: 7000 
+  nearby_distance: 10 #15killometers
+  all_distance: 900000 #15killometers

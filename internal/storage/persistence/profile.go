@@ -7,6 +7,7 @@ import (
 	"dating/internal/constant/model"
 	"dating/internal/storage"
 	"dating/platform/logger"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -117,8 +118,10 @@ func (p *profile) GetCustomers(ctx context.Context, filterPagination *constant.F
 		}
 
 		location := []float64{}
+
+		fmt.Println("%s", pf)
 		if pf.Location != nil {
-			location = pf.Location
+			location = pf.Location.Coordinates
 		}
 
 		if len(location) == 2 {

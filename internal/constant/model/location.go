@@ -1,6 +1,6 @@
 package model
 
 type Location struct {
-	Name        string    `bson:"name,omitempty" json:"name,omitempty"`
+	Type        string    `bson:"type,omitempty" json:"type,omitempty"`
 	Coordinates []float64 `bson:"coordinates" json:"coordinates"`
 }

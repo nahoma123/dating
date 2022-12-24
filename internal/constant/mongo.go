@@ -48,9 +48,13 @@ func GetResults(cxt context.Context, db *mongo.Database, collectionName string, 
 			filter = bson.M{f.Field: bson.M{"$regex": primitive.Regex{Pattern: f.Value, Options: "i"}}}
 		} else if f.Operator == "!=" {
 			filter = bson.M{f.Field: bson.M{"$ne": f.Value}}
-		} else {
-			// Handle other operator types
+		} else if f.Operator == "in" {
+			filter = bson.M{f.Field: bson.M{"$in": f.Value}}
 		}
+
+		// else {
+		// 	// Handle other operator types
+		// }
 		filters = append(filters, filter)
 	}
 

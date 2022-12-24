@@ -38,6 +38,7 @@ type Profile struct {
 	LanguageSpoken string `bson:"language_spoken" json:"language_spoken,omitempty"`
 
 	LookingFor []string `bson:"looking_for,omitempty" json:"looking_for"`
+	Interests  []string `bson:"interests,omitempty" json:"interests,omitempty"`
 
 	// basic info
 	Height      int    `bson:"height,omitempty" json:"height,omitempty"`
@@ -55,7 +56,7 @@ type Profile struct {
 	// It is automatically set when the user is created.
 
 	Distance float64   `bson:"distance" json:"distance"`
-	Location []float64 `bson:"location,omitempty" json:"location,omitempty"`
+	Location *Location `bson:"location,omitempty" json:"location,omitempty"`
 
 	CreatedAt time.Time `bson:"created_at,omitempty" json:"created_at,omitempty"`
 	UpdatedAt time.Time `bson:"updated_at,omitempty" json:"updated_at,omitempty"`

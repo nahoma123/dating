@@ -39,8 +39,14 @@ func InitRoute(router *gin.RouterGroup, handler rest.Profile, authMiddleware mid
 		},
 		{
 			Method:      "GET",
-			Path:        "/customers/discover",
+			Path:        "/customers/discover_new",
 			Handler:     handler.DiscoverNewUsers,
+			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
+		},
+		{
+			Method:      "GET",
+			Path:        "/customers/discover",
+			Handler:     handler.DiscoverUsers,
 			Middlewares: []gin.HandlerFunc{authMiddleware.BindUser("15502629-f754-42e1-8475-3a3915a4be52")},
 		},
 	}
